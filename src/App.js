@@ -1,24 +1,29 @@
-import './App.css';
-import Sidebar from "./components/sidebar";
+import { useState } from "react";
 import Banner from "./components/banner";
-import Card from './components/card';
-import { useState } from 'react';
+import Sidebar from "./components/sidebar";
+import Card from "./components/card";
 
 function App() {
-  const [currStudent, setCurrStudent] = useState(null); // Use null initially
+  const [currStudent, setCurrStudent] = useState(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const refreshStudents = () => {
+    console.log("Project ID:", process.env.REACT_APP_PROJECT_ID);
+    setRefreshTrigger((prev) => prev + 1); // Increment the trigger state
+  };
 
   return (
     <div className="App">
-      <Banner />
+      <Banner onReset={refreshStudents} />
       <div className="flex flex-row h-screen">
-        {/* Sidebar: Takes full height of the remaining screen and scrollable */}
         <div className="w-[30%] h-full overflow-y-auto">
-          <Sidebar onSelectStudent={setCurrStudent} /> {/* Pass callback */}
+          <Sidebar
+            onSelectStudent={setCurrStudent}
+            refreshTrigger={refreshTrigger}
+          />
         </div>
-
-        {/* Card: Takes the remaining space */}
         <div className="w-[70%]">
-          <Card student={currStudent} /> {/* Pass selected student */}
+          <Card student={currStudent} onStatusChange={refreshStudents} />
         </div>
       </div>
     </div>
